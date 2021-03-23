@@ -139,6 +139,10 @@ ul {
   padding-left: 0px;
   height: 50px;
 }
+    
+.label{
+    color:white;
+}
 
 .left {
   display: flex;
@@ -162,6 +166,14 @@ ul {
   text-align: center;
 }
 
+    
+body {
+  background-image: url('test.jpg');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 100% 100%;
+}
+    
 .button1 {background-color: grey;} /* Grey */
 </style>
 <body>
@@ -274,6 +286,8 @@ ul {
             </select>
             <label for="petAbilityValue">Pet Ability Value:</label>
             <input id="petAbilityValue" type="number" name="petAbilityValue" rows="4" cols="50" onblur="fieldUpdateHandler('petAbilityValue')" style="width:10%; height: auto; margin: 10px">
+            <label for="petAbilityValueBonus">Pet Ability Bonus:</label>
+            <input id="petAbilityValueBonus" type="number" name="petAbilityValueBonus" rows="4" cols="50" onblur="fieldUpdateHandler('petAbilityValueBonus')" style="width:10%; height: auto; margin: 10px">
         </div>
         <div class="center">
             <label for="bossElements">Boss Elements:</label>
@@ -332,6 +346,7 @@ ul {
     var g_petAttack = 0;
     var g_petAbility = 0;
     var g_petAbilityValue = 0;
+    var g_petAbilityValueBonus = 0;
     var g_petElement = "";
     
     //bossElements
@@ -339,7 +354,7 @@ ul {
     var g_bossElement2 = "";
     
     //built in rates
-   var g_petMissRate = 10;
+    var g_petMissRate = 10;
     var g_bossMissRate = 5;
     var g_knightMissRate = 10;
     
@@ -455,6 +470,10 @@ ul {
             g_petAbilityValue = fieldValue;
             console.log(fieldValue);
         }
+        if(field == "petAbilityValueBonus"){
+            g_petAbilityValueBonus = fieldValue;
+            console.log(fieldValue);
+        }
         if(field == "petElement"){
             g_petElement = fieldValue;
             console.log(fieldValue);
@@ -493,6 +512,7 @@ ul {
         console.log(g_petAttack);
         console.log(g_petAbility);
         console.log(g_petAbilityValue);
+        console.log(g_petAbilityValueBonus);
         console.log(g_petElement);
         console.log(g_bossElement1);
         console.log(g_bossElement2);
@@ -531,6 +551,9 @@ ul {
         var bossHitDamage1 = calculateBossHit(g_k1Defense,bossMultiplier1,level);//get boss hit damage
         var bossHitDamage2 = calculateBossHit(g_k2Defense,bossMultiplier2,level);//get boss hit damage
         var bossHitDamage3 = calculateBossHit(g_k3Defense,bossMultiplier3,level);//get boss hit damage
+        var shatterAmount1 = calculateShieldAmount(g_k1element1,g_k1element2,g_petElement)
+        var shatterAmount2 = calculateShieldAmount(g_k2element1,g_k2element2,g_petElement)
+        var shatterAmount3 = calculateShieldAmount(g_k3element1,g_k3element2,g_petElement)
         var knightHP = 0;//initiates hp
         var knightDamage = 0;//initiates knight damage
         var bossDamage = 0;//initiates boss damage
@@ -561,10 +584,11 @@ ul {
             knightDamage = knightHitDamage1;
             bossDamage = bossHitDamage1;
             bossHP = g_raidBossesHP[level];
-            healAmount = g_petAbilityValue;
+            healAmount = shatterAmount1;
             bossAlive = true;
             stunRate = g_k1Stun;
             hitCount++;
+            console.log(healAmount);
             //console.log("made it here");
             //console.log(knightHP);
             //console.log(bossAlive);
@@ -658,6 +682,9 @@ ul {
             knightDamage = knightHitDamage2;
             bossDamage = bossHitDamage2;
             stunRate = g_k2Stun;
+            healAmount = shatterAmount2;
+            console.log(healAmount);
+            
             
             while(knightHP > 0 && bossAlive == true){
                 //knightstuff
@@ -748,6 +775,8 @@ ul {
             knightDamage = knightHitDamage3;
             bossDamage = bossHitDamage3;
             stunRate = g_k3Stun;
+            healAmount = shatterAmount3;
+            console.log(healAmount);
             
             while(knightHP > 0 && bossAlive == true){
                 //knightstuff
@@ -839,6 +868,26 @@ ul {
         console.log(totalScore);
         console.log(hitCount);
         return totalScore/hitCount;
+    }
+    
+    function calculateShieldAmount(element1,element2,petElement){
+        var abilityValue = g_petAbilityValue;
+        var abilityBonus = g_petAbilityValueBonus;
+        var shieldAmount = 0;
+        shieldAmount += parseInt(abilityValue)
+        
+        var addFlag = false;
+        if(petElement == element1){
+            addFlag = true;
+        }
+        if(petElement == element2){
+            addFlag = true;
+        }
+        if(addFlag == true){
+            shieldAmount += parseInt(abilityBonus);
+        }
+
+        return shieldAmount;
     }
     
     function calculatePetMultiplier(){
